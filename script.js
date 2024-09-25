@@ -1,23 +1,41 @@
-let firstNum;
-let secondNum;
-let operator;
-
-let statement;
+let operatorIn = false;
+let equationComputed = false;
+let firstNumIn = false;
+let secondNumIn = false;
+let statement = [];
 let currentDisplay = document.querySelector(".current");
-let historyDisplay = document.querySelector(".history");
 let displayValue = currentDisplay.textContent;
-
 
 document.addEventListener("click", event => {
     if(event.target.classList.contains("number-button")){
-        currentDisplay.textContent = event.target.textContent;
-        displayValue += currentDisplay.textContent;
-    } else if(event.target.classList.contains("operator")){
+        if(equationComputed) {
+            currentDisplay.textContent = "";
+            displayValue = "";
+            equationComputed = false;
+        }
+        currentDisplay.textContent += event.target.textContent;
         displayValue += event.target.textContent;
+        if(!operatorIn) {
+            firstNumIn = true;
+        } else {
+            secondNumIn = true;
+        }
+    } else if(event.target.classList.contains("operator")){
+        if(!operatorIn){ 
+            currentDisplay.textContent += ` ${event.target.textContent} `;
+            displayValue += ` ${event.target.textContent} `;
+            operatorIn = true;
+        } 
+    } else if(event.target.classList.contains("clear")){
+        currentDisplay.textContent = "";
+        displayValue = "";
+        operatorIn = false;
     } else if(event.target.classList.contains("equals")){
-        statement = displayValue.split("");
+        statement = displayValue.split(" ");
         currentDisplay.textContent = operate(statement[1], statement[0], statement[2]);
         displayValue = "";
+        operatorIn = false;
+        equationComputed = true;
     } 
 })
 
@@ -51,6 +69,3 @@ function operate(operator, num1, num2){
         return divide(num1, num2);
     }
 }
-
-
-
