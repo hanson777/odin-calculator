@@ -1,43 +1,54 @@
+let firstNum;
+let secondNum;
+let operator;
 let operatorIn = false;
-let equationComputed = false;
 let firstNumIn = false;
 let secondNumIn = false;
-let statement = [];
 let currentDisplay = document.querySelector(".current");
-let displayValue = currentDisplay.textContent;
+let historyDisplay = document.querySelector(".history");
 
 document.addEventListener("click", event => {
     if(event.target.classList.contains("number-button")){
-        if(equationComputed) {
-            currentDisplay.textContent = "";
-            displayValue = "";
-            equationComputed = false;
-        }
-        currentDisplay.textContent += event.target.textContent;
-        displayValue += event.target.textContent;
-        if(!operatorIn) {
+        if(!operatorIn){
             firstNumIn = true;
-        } else {
+            firstNum += event.target.textContent;
+            currentDisplay.textContent += event.target.textContent;
+        } else if(operatorIn){
             secondNumIn = true;
+            secondNum += event.target.textContent;
+            currentDisplay.textContent += event.target.textContent;
         }
     } else if(event.target.classList.contains("operator")){
-        if(!operatorIn){ 
-            currentDisplay.textContent += ` ${event.target.textContent} `;
-            displayValue += ` ${event.target.textContent} `;
+        if(!operatorIn){
             operatorIn = true;
+            operator = event.target.textContent;
+            currentDisplay.textContent += ` ${operator} `
+        } else if(secondNumIn){
+            currentDisplay.textContent = operate(operator, firstNum, secondNum);
+            firstNum = operate(operator, firstNum, secondNum);
+            operator = event.target.textContent;
+            secondNumIn = false;
+            secondNum = "";
+            currentDisplay.textContent +=  ` ${operator} `;
+        } else if(!secondNumIn && operatorIn){
+            currentDisplay.textContent = currentDisplay.textContent.replace(operator, event.target.textContent);
+            operator = event.target.textContent;
+        }
+    } else if(event.target.classList.contains("equals")){
+        if(firstNumIn && secondNumIn && operatorIn){
+            console.log(`${firstNum} ${secondNum} ${operator}`)
+            currentDisplay.textContent = operate(operator, firstNum, secondNum);
         } 
     } else if(event.target.classList.contains("clear")){
+        firstNumIn = false;
+        secondNumIn = false;
+        operatorIn = false;
+        firstNum = "";
+        secondNum = "";
+        operator = "";
         currentDisplay.textContent = "";
-        displayValue = "";
-        operatorIn = false;
-    } else if(event.target.classList.contains("equals")){
-        statement = displayValue.split(" ");
-        currentDisplay.textContent = operate(statement[1], statement[0], statement[2]);
-        displayValue = "";
-        operatorIn = false;
-        equationComputed = true;
-    } 
-})
+    }
+});
 
 function add(a, b){
     return a + b;
